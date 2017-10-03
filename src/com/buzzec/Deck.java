@@ -1,37 +1,22 @@
 package com.buzzec;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.*;
+import java.util.*;
 
 public class Deck {
     private String name;
-    private int id;
     private ArrayList<Card> deck;
-
-    private static int idTracker = 0;
-
-    public Deck(String name, int id, ArrayList<Card> deck){
+    
+    public Deck(String name, ArrayList<Card> deck){
         this.name = name;
-        this.id = id;
         this.deck = deck;
     }
-    public Deck(String name, ArrayList<Card> deck){
-        this(name, idTracker++, deck);
-    }
-    public Deck(String name, int id){
-        this(name, id, new ArrayList<>());
-    }
     public Deck(String name){
-        this(name, idTracker++);
-    }
-    public Deck(String name, int id, String filename){
-        this(name, id, new ArrayList<>());
-        makeDeck(filename);
+        this(name, new ArrayList<>());
     }
     public Deck(String name, String filename){
-        this(name, idTracker++, filename);
+        this(name, new ArrayList<>());
+        makeDeck(filename);
     }
 
     public void makeDeck(String filename){
@@ -60,12 +45,22 @@ public class Deck {
         Collections.shuffle(deck);
     }
     public Card draw(){
-        return deck.remove(0);
+        return draw(0);
+    }
+    public Card draw(int x){
+        return deck.remove(x);
     }
     public Card peek(){
         return deck.get(0);
     }
-
+    public Card get(int x){
+        return deck.get(x);
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
     @Override
     public String toString(){
         StringBuilder output = new StringBuilder();
