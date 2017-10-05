@@ -1,47 +1,42 @@
 package com.buzzec;
 
-import java.io.*;
+import com.buzzec.loggger.*;
+
 import java.util.*;
 
 public class Deck {
     private String name;
     private ArrayList<Card> deck;
+    private Logger logger;
     
-    public Deck(String name, ArrayList<Card> deck){
+    public Deck(String name, ArrayList<Card> deck, Logger logger){
         this.name = name;
         this.deck = deck;
+        this.logger = logger;
     }
-    public Deck(String name){
-        this(name, new ArrayList<>());
+    public Deck(String name, Logger logger){
+        this(name, new ArrayList<>(), logger);
     }
-    public Deck(String name, String filename){
-        this(name, new ArrayList<>());
+    public Deck(String name, String filename, Logger logger){
+        this(name, new ArrayList<>(), logger);
         makeDeck(filename);
     }
 
-    public void makeDeck(String filename){
-        String line;
-        try{
-            BufferedReader br = new BufferedReader(new FileReader(filename));
-            String split = br.readLine();
-            while((line = br.readLine()) != null){
-                String[] splitLine = line.split(split);
-                //Print deck for testing
-                
-                for(String x:splitLine){
-                    System.out.print(x + "_");
-                }
-                System.out.println();
-                
-                deck.add(new Card(splitLine[0], splitLine[1], Integer.parseInt(splitLine[2])));
-            }
+    private void makeDeck(String filename){
+//        logger.log("makeDeck(" + filename + ")", LogLevel.DEBUG);
+        logger.log("Making Deck of file: " + filename, LogLevel.INFO);
+        
+        ArrayList<AnalyzedLine> file = FileAnalyzer.analyzeFile(filename, logger);
+
+        for(AnalyzedLine x : file){
+            deck.add(new Card(x.get(0), x.get(1), Integer.parseInt(x.get(2)), logger));
         }
-        catch(Exception ex){
-            ex.printStackTrace();
-        }
+        
+        logger.log("Deck made.", LogLevel.INFO);
     }
 
     public void shuffle(){
+        logger.log("Shuffling Deck", LogLevel.INFO);
         Collections.shuffle(deck);
     }
     public Card draw(){
@@ -59,6 +54,16 @@ public class Deck {
     
     public String getName(){
         return name;
+    }
+    
+    @Override
+    protected Deck clone() throws CloneNotSupportedException{
+        logger.log("Cloning Deck", LogLevel.INFO);
+        ArrayList<Card> deck = new ArrayList<>();
+        
+        deck.addAll(deck);
+        
+        return new Deck(name, deck, logger);
     }
     
     @Override
